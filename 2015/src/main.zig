@@ -5,6 +5,7 @@ const mem = std.mem;
 const Day = enum {
     day1,
     day2,
+    day3,
 };
 
 pub fn main() anyerror!void {
@@ -30,7 +31,12 @@ pub fn main() anyerror!void {
                 const day2 = @import("day2.zig");
                 day2.part1();
                 day2.part2();
-            }
+            },
+            .day3 => {
+                const day3 = @import("day3.zig");
+                try day3.part1();
+                //day3.part2();
+            },
         }
         
         allocator.free(arg);
