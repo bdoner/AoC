@@ -1,4 +1,5 @@
 const std = @import("std");
+const TestCase = @import("utils.zig").TestCase;
 const expect = std.testing.expect;
 const input = @embedFile("input/day1.txt");
 
@@ -35,19 +36,19 @@ pub fn part2() void {
 
 test "part1 samples" {
 
-    const tests = [_]struct { exp: i32, data: []const u8 } {
-        .{ .exp = 0, .data = "(())" },
-        .{ .exp = 0, .data = "()()" },
+    const tests = [_]TestCase {
+        .{ .expected = 0, .data = "(())" },
+        .{ .expected = 0, .data = "()()" },
 
-        .{ .exp = 3, .data = "(((" },
-        .{ .exp = 3, .data = "(()(()(" },
-        .{ .exp = 3, .data = "))(((((" },
+        .{ .expected = 3, .data = "(((" },
+        .{ .expected = 3, .data = "(()(()(" },
+        .{ .expected = 3, .data = "))(((((" },
 
-        .{ .exp = -1, .data = "())" },
-        .{ .exp = -1, .data = "))(" },
+        .{ .expected = -1, .data = "())" },
+        .{ .expected = -1, .data = "))(" },
 
-        .{ .exp = -3, .data = ")))" },
-        .{ .exp = -3, .data = ")())())" },
+        .{ .expected = -3, .data = ")))" },
+        .{ .expected = -3, .data = ")())())" },
     };
 
     for (tests) |tc| {
@@ -55,14 +56,14 @@ test "part1 samples" {
         for(tc.data) |b| {
             floor += getDirection(b);
         }
-        try expect(floor == tc.exp);
+        try expect(floor == tc.expected);
     }
 }
 
 test "part2 samples" {
-    const tests = [_]struct { exp: i32, data: []const u8 } {
-        .{ .exp = 1, .data = ")" },
-        .{ .exp = 5, .data = "()())" },
+    const tests = [_]TestCase {
+        .{ .expected = 1, .data = ")" },
+        .{ .expected = 5, .data = "()())" },
     };
 
     for (tests) |tc| {
@@ -75,6 +76,6 @@ test "part2 samples" {
                 break;
             }
         }
-        try expect(basement_floor == tc.exp);
+        try expect(basement_floor == tc.expected);
     }
 }
