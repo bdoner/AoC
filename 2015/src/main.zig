@@ -18,6 +18,7 @@ pub fn main() anyerror!void {
     _ = args.skip();
     while(try args.next(allocator)) |arg| {
         argCount += 1;
+        defer allocator.free(arg);
 
         const argument = meta.stringToEnum(Day, arg) orelse { usage(arg); break; };
         std.log.info("Running solution for {s}", .{@tagName(argument)});
@@ -35,11 +36,10 @@ pub fn main() anyerror!void {
             .day3 => {
                 const day3 = @import("day3.zig");
                 try day3.part1();
-                //day3.part2();
+                try day3.part2();
             },
         }
         
-        allocator.free(arg);
     }
 
     if(argCount == 0) {

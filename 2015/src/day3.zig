@@ -3,48 +3,75 @@ const expect = std.testing.expect;
 const TestCase = @import("utils.zig").TestCase;
 const input = @embedFile("input/day3.txt");
 
-pub fn part1() !void{
-    const r = try solve(input);
+const Coord = struct {
+    x: u32,
+    y: u32,
+
+    pub fn init(x: u32, y: u32) Coord {
+        return .{
+            .x = x,
+            .y = y,
+        };
+    }
+
+    pub fn getCalculatedIndex(me: Coord, w: u32) u32 {
+        return me.x + (me.y * w);
+    }
+};
+
+pub fn part1() !void {
+    const r = try solve(input, 1);
     std.log.info("Part1: Result is {}", .{r});
 }
 
-
-pub fn part2() void{
-
+pub fn part2() !void {
+    const r = try solve(input, 2);
+    std.log.info("Part2: Result is {}", .{r});
 }
 
-fn solve(inp: []const u8) !u32 {
+fn solve(inp: []const u8, num_santas: u8) !u32 {
     const width = 20000;
-    const height = width; 
+    const height = width;
     const offset = width / 2;
-    var allocator = std.heap.page_allocator;
-    
-    var grid = try allocator.alloc(u32, width*height); //~40kb
+
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
+
+    var grid = try allocator.alloc(u32, width * height);
+    defer allocator.free(grid);
     std.mem.set(u32, grid, 0);
 
-    var x: u32 = offset;
-    var y: u32 = offset;
-    grid[x + (y * width)] += 1;
+    var santa_coords = try allocator.alloc(Coord, num_santas);
+    defer allocator.free(santa_coords);
 
+    var sc: u32 = 0;
+    while (sc < num_santas) : (sc += 1) {
+        santa_coords[sc] = Coord.init(offset, offset);
+        //std.log.warn("coord: {}: {}", .{ sc, santa_coords[sc] });
 
-    for(inp) |b| {
-        //std.log.warn("index before: {c}: {},{}", .{b, x, y});
-        switch(b) {
-            '^' => y -= 1,
-            '>' => x += 1,
-            'v' => y += 1,
-            '<' => x -= 1,
+        grid[santa_coords[sc % num_santas].getCalculatedIndex(width)] += 1;
+    }
+
+    for (inp) |b| {
+        const c: *Coord = &santa_coords[sc % num_santas];
+        //std.log.warn("index before: {c}: {},{}", .{ b, santa_coords[sc % num_santas].x, santa_coords[sc % num_santas].y });
+        switch (b) {
+            '^' => c.y -= 1,
+            '>' => c.x += 1,
+            'v' => c.y += 1,
+            '<' => c.x -= 1,
             else => {},
         }
-        grid[x + (y * width)] += 1;
-        //std.log.warn("index  after: {c}: {},{}", .{b, x, y});
-
+        grid[c.getCalculatedIndex(width)] += 1;
+        sc += 1;
+        //std.log.warn("index  after: {c}: {},{}", .{ b, santa_coords[sc % num_santas].x, santa_coords[sc % num_santas].y });
     }
 
     var res: u32 = 0;
-    for(grid) |v| {
+    for (grid) |v| {
         //std.log.warn("count: {}: {}", .{i, v});
-        if(0 < v) {
+        if (0 < v) {
             res += 1;
         }
     }
@@ -53,21 +80,27 @@ fn solve(inp: []const u8) !u32 {
 }
 
 test "part1 examples" {
-    const tests = [_]TestCase {
+    const tests = [_]TestCase{
         .{ .expected = 2, .data = ">" },
         .{ .expected = 4, .data = "^>v<" },
         .{ .expected = 2, .data = "^v^v^v^v^v" },
     };
 
-    for(tests) |tc| {
-        const r = try solve(tc.data);
+    for (tests) |tc| {
+        const r = try solve(tc.data, 1);
         try expect(r == tc.expected);
     }
 }
 
-
 test "part2 examples" {
+    const tests = [_]TestCase{
+        .{ .expected = 3, .data = "^v" },
+        .{ .expected = 3, .data = "^>v<" },
+        .{ .expected = 11, .data = "^v^v^v^v^v" },
+    };
 
+    for (tests) |tc| {
+        const r = try solve(tc.data, 2);
+        try expect(r == tc.expected);
+    }
 }
-
-
