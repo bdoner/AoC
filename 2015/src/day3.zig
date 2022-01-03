@@ -1,6 +1,8 @@
 const std = @import("std");
-const expect = std.testing.expect;
+const newTest = @import("utils.zig").newTest;
 const TestCase = @import("utils.zig").TestCase;
+const expectEqual = std.testing.expectEqual;
+
 const input = @embedFile("input/day3.txt");
 
 const Coord = struct {
@@ -79,28 +81,28 @@ fn solve(inp: []const u8, num_santas: u8) !u32 {
     return res;
 }
 
-test "part1 examples" {
-    const tests = [_]TestCase{
-        .{ .expected = 2, .data = ">" },
-        .{ .expected = 4, .data = "^>v<" },
-        .{ .expected = 2, .data = "^v^v^v^v^v" },
+test "part1 tests" {
+    const tests = [_]TestCase(u32){
+        newTest(u32, 2, ">"),
+        newTest(u32, 4, "^>v<"),
+        newTest(u32, 2, "^v^v^v^v^v"),
     };
 
     for (tests) |tc| {
         const r = try solve(tc.data, 1);
-        try expect(r == tc.expected);
+        try expectEqual(tc.expected, r);
     }
 }
 
-test "part2 examples" {
-    const tests = [_]TestCase{
-        .{ .expected = 3, .data = "^v" },
-        .{ .expected = 3, .data = "^>v<" },
-        .{ .expected = 11, .data = "^v^v^v^v^v" },
+test "part2 tests" {
+    const tests = [_]TestCase(u32){
+        newTest(u32, 3, "^v"),
+        newTest(u32, 3, "^>v<"),
+        newTest(u32, 11, "^v^v^v^v^v"),
     };
 
     for (tests) |tc| {
         const r = try solve(tc.data, 2);
-        try expect(r == tc.expected);
+        try expectEqual(tc.expected, r);
     }
 }

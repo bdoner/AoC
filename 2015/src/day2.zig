@@ -1,6 +1,8 @@
 const std = @import("std");
-const expect = std.testing.expect;
+const newTest = @import("utils.zig").newTest;
 const TestCase = @import("utils.zig").TestCase;
+const expectEqual = std.testing.expectEqual;
+
 const input = @embedFile("input/day2.txt");
 
 fn getBoxArea(l: u32, w: u32, h: u32) u32 {
@@ -72,9 +74,9 @@ pub fn part2() void {
 }
 
 test "part1 tests" {
-    const tests = [_]TestCase{
-        .{ .expected = 58, .data = "2x3x4" },
-        .{ .expected = 43, .data = "1x1x10" },
+    const tests = [_]TestCase(u32){
+        newTest(u32, 58, "2x3x4"),
+        newTest(u32, 43, "1x1x10"),
     };
 
     for(tests) |tc| {
@@ -84,14 +86,14 @@ test "part1 tests" {
         var area = getBoxArea(box[0], box[1], box[2]);
         //std.log.warn("area: {any}", .{area});
         
-        try expect(area == tc.expected);
+        try expectEqual(tc.expected, area);
     }
 }
 
 test "part2 tests" {
-    const tests = [_]TestCase{
-        .{ .expected = 34, .data = "2x3x4" },
-        .{ .expected = 14, .data = "1x1x10" },
+    const tests = [_]TestCase(u32){
+        newTest(u32, 34, "2x3x4"),
+        newTest(u32, 14, "1x1x10"),
     };
 
     for(tests) |tc| {
@@ -105,6 +107,6 @@ test "part2 tests" {
         
         const totalRibbon = area + boxVol;
 
-        try expect(totalRibbon == tc.expected);
+        try expectEqual(tc.expected, totalRibbon);
     }
 }

@@ -1,6 +1,8 @@
 const std = @import("std");
+const newTest = @import("utils.zig").newTest;
 const TestCase = @import("utils.zig").TestCase;
-const expect = std.testing.expect;
+const expectEqual = std.testing.expectEqual;
+
 const input = @embedFile("input/day1.txt");
 
 inline fn getDirection(b: u8) i32 {
@@ -34,21 +36,22 @@ pub fn part2() void {
     std.log.info("Part2: Floor Santa enters basement is {}", .{basement_floor});
 }
 
-test "part1 samples" {
+test "part1 tests" {
 
-    const tests = [_]TestCase {
-        .{ .expected = 0, .data = "(())" },
-        .{ .expected = 0, .data = "()()" },
+    const tests = [_]TestCase(i32) {
+        newTest(i32, 0, "(())"),
+        newTest(i32, 0, "(())"),
+        newTest(i32, 0, "()()"),
 
-        .{ .expected = 3, .data = "(((" },
-        .{ .expected = 3, .data = "(()(()(" },
-        .{ .expected = 3, .data = "))(((((" },
+        newTest(i32, 3, "((("),
+        newTest(i32, 3, "(()(()("),
+        newTest(i32, 3, "))((((("),
 
-        .{ .expected = -1, .data = "())" },
-        .{ .expected = -1, .data = "))(" },
+        newTest(i32, -1, "())"),
+        newTest(i32, -1, "))("),
 
-        .{ .expected = -3, .data = ")))" },
-        .{ .expected = -3, .data = ")())())" },
+        newTest(i32, -3, ")))"),
+        newTest(i32, -3, ")())())"),
     };
 
     for (tests) |tc| {
@@ -56,14 +59,14 @@ test "part1 samples" {
         for(tc.data) |b| {
             floor += getDirection(b);
         }
-        try expect(floor == tc.expected);
+        try expectEqual(tc.expected, floor);
     }
 }
 
-test "part2 samples" {
-    const tests = [_]TestCase {
-        .{ .expected = 1, .data = ")" },
-        .{ .expected = 5, .data = "()())" },
+test "part2 tests" {
+    const tests = [_]TestCase(u32) {
+        newTest(u32, 1, ")"),
+        newTest(u32, 5, "()())"),
     };
 
     for (tests) |tc| {
@@ -76,6 +79,6 @@ test "part2 samples" {
                 break;
             }
         }
-        try expect(basement_floor == tc.expected);
+        try expectEqual(tc.expected, basement_floor);
     }
 }
