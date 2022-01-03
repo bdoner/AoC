@@ -7,7 +7,7 @@ const input = @embedFile("input/day5.txt");
 
 pub fn part1() void {
     var nice_strings: u32 = 0;
-    var it = std.mem.split(u8, input, "\n");
+    var it = std.mem.tokenize(u8, input, "\n");
     while (it.next()) |line| {
         if (isNice(line)) {
             nice_strings += 1;
@@ -17,7 +17,14 @@ pub fn part1() void {
 }
 
 pub fn part2() void {
-    std.log.info("Part2: Result is {}", .{0});
+    var nice_strings: u32 = 0;
+    var it = std.mem.tokenize(u8, input, "\n");
+    while (it.next()) |line| {
+        if (isNiceV2(line)) {
+            nice_strings += 1;
+        }
+    }
+    std.log.info("Part2: Result is {}", .{nice_strings});
 }
 
 fn isNice(string: []const u8) bool {
@@ -58,6 +65,39 @@ fn isNice(string: []const u8) bool {
     return true;
 }
 
+fn isNiceV2(string: []const u8) bool {
+    
+    // It contains a pair of any two letters that appears at least twice in the string without overlapping, 
+    // like xyxy (xy) or aabcdefgaa (aa), but not like aaa (aa, but it overlaps).
+    var found = false;
+    var i: u32 = 0;
+    while (i < string.len - 1) : (i += 1) {
+        if (std.mem.indexOfPos(u8, string, i+2, string[i..i+2])) |_| {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        return false;
+    }
+    
+    //It contains at least one letter which repeats with exactly one letter between them, like xyx, abcdefeghi (efe), or even aaa.
+    found = false;
+    i = 0;
+    while (i < string.len - 2) : (i += 1) {
+        if (string[i] == string[i+2]) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        return false;
+    }
+
+
+    return true;
+}
+
 test "part1 tests" {
     const tests = [_]TestCase(bool){
         newTest(bool, true, "ugknbfddgicrmopn"),
@@ -73,11 +113,18 @@ test "part1 tests" {
 }
 
 test "part2 tests" {
-    const tests = [_]TestCase(u32){
-        newTest(u32, 0, "abc"),
+    const tests = [_]TestCase(bool){
+        newTest(bool, true, "qjhvhtzxzqqjkmpb"),
+        newTest(bool, true, "xxyxx"),
+        newTest(bool, false, "uurcxstgmygtbstg"),
+        newTest(bool, false, "ieodomkazucvgmuy"),
     };
 
+    std.log.warn("", .{});
     for (tests) |tc| {
-        try expectEqual(tc.expected, 0);
+        std.log.warn("testing: {s}", .{tc.data});
+
+        const n = isNiceV2(tc.data);
+        try expectEqual(tc.expected, n);
     }
 }

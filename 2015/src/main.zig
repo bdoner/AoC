@@ -48,7 +48,7 @@ pub fn main() anyerror!void {
             .day5 => {
                 const day5 = @import("day5.zig");
                 day5.part1();
-                //day5.part2();
+                day5.part2();
             },
         }
         
