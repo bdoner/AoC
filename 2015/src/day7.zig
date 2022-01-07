@@ -12,13 +12,14 @@ pub fn part1() !void {
     var allocator = gpa.allocator();
 
     var nodes = std.StringHashMap(Node).init(allocator);
-    defer {
-        var nk = nodes.keyIterator();
-        while (nk.next()) |k| {
-            allocator.free(k.*);
-        }
-        nodes.deinit();
-    }
+    defer nodes.deinit();
+    // defer {
+    //     var nk = nodes.keyIterator();
+    //     while (nk.next()) |k| {
+    //         allocator.free(k.*);
+    //     }
+    //     nodes.deinit();
+    // }
 
     var i: usize = 0;
     var it = std.mem.tokenize(u8, input, "\n");
@@ -42,110 +43,50 @@ pub fn part2() void {
 }
 
 fn getNodeValue(node: *Node, nodes: *std.StringHashMap(Node)) std.fmt.ParseIntError!u16 {
-    if (std.mem.eql(u8, node.*.name, "ly")) {
-        @breakpoint();
-    }
-    if (std.mem.eql(u8, node.*.name, "lz")) {
-        @breakpoint();
-    }
-    if (std.mem.eql(u8, node.*.name, "ma")) {
-        @breakpoint();
-    }
-
     if (node.value) |v| {
         return v;
     }
 
+    var lVal: u16 = 0;
+    if (node.left) |ln| {
+        const lNode = nodes.getPtr(ln);
+
+        if (lNode) |n| {
+            lVal = try getNodeValue(n, nodes);
+        } else {
+            lVal = try std.fmt.parseInt(u16, ln, 10);
+        }
+    }
+
+    var rVal: u16 = 0;
+    if (node.right) |rn| {
+        const rNode = nodes.getPtr(rn);
+
+        if (rNode) |n| {
+            rVal = try getNodeValue(n, nodes);
+        } else {
+            rVal = try std.fmt.parseInt(u16, rn, 10);
+        }
+    }
+
     switch (node.op) {
         .AND => {
-            const lNode = nodes.getPtr(node.left.?);
-            var lVal: u16 = 0;
-            if (lNode) |n| {
-                lVal = try getNodeValue(n, nodes);
-            } else {
-                lVal = try std.fmt.parseInt(u16, node.left.?, 10);
-            }
-
-            const rNode = nodes.getPtr(node.right.?);
-            var rVal: u16 = 0;
-            if (rNode) |n| {
-                rVal = try getNodeValue(n, nodes);
-            } else {
-                rVal = try std.fmt.parseInt(u16, node.right.?, 10);
-            }
-
             node.*.value = rVal & rVal;
             return node.*.value.?;
         },
         .OR => {
-            const lNode = nodes.getPtr(node.left.?);
-            var lVal: u16 = 0;
-            if (lNode) |n| {
-                lVal = try getNodeValue(n, nodes);
-            } else {
-                lVal = try std.fmt.parseInt(u16, node.left.?, 10);
-            }
-
-            const rNode = nodes.getPtr(node.right.?);
-            var rVal: u16 = 0;
-            if (rNode) |n| {
-                rVal = try getNodeValue(n, nodes);
-            } else {
-                rVal = try std.fmt.parseInt(u16, node.right.?, 10);
-            }
-
             node.*.value = lVal | rVal;
             return node.*.value.?;
         },
         .RSHIFT => {
-            const lNode = nodes.getPtr(node.left.?);
-            var lVal: u16 = 0;
-            if (lNode) |n| {
-                lVal = try getNodeValue(n, nodes);
-            } else {
-                lVal = try std.fmt.parseInt(u16, node.left.?, 10);
-            }
-
-            const rNode = nodes.getPtr(node.right.?);
-            var rVal: u16 = 0;
-            if (rNode) |n| {
-                rVal = try getNodeValue(n, nodes);
-            } else {
-                rVal = try std.fmt.parseInt(u16, node.right.?, 10);
-            }
-
             node.*.value = lVal >> @truncate(u4, rVal);
             return node.*.value.?;
         },
         .LSHIFT => {
-            const lNode = nodes.getPtr(node.left.?);
-            var lVal: u16 = 0;
-            if (lNode) |n| {
-                lVal = try getNodeValue(n, nodes);
-            } else {
-                lVal = try std.fmt.parseInt(u16, node.left.?, 10);
-            }
-
-            const rNode = nodes.getPtr(node.right.?);
-            var rVal: u16 = 0;
-            if (rNode) |n| {
-                rVal = try getNodeValue(n, nodes);
-            } else {
-                rVal = try std.fmt.parseInt(u16, node.right.?, 10);
-            }
-
             node.*.value = lVal << @truncate(u4, rVal);
             return node.*.value.?;
         },
         .NOT => {
-            const rNode = nodes.getPtr(node.right.?);
-            var rVal: u16 = 0;
-            if (rNode) |n| {
-                rVal = try getNodeValue(n, nodes);
-            } else {
-                rVal = try std.fmt.parseInt(u16, node.right.?, 10);
-            }
-
             node.*.value = ~rVal;
             return node.*.value.?;
         },
@@ -154,20 +95,12 @@ fn getNodeValue(node: *Node, nodes: *std.StringHashMap(Node)) std.fmt.ParseIntEr
             return node.*.value.?;
         },
         .assign => {
-            const lNode = nodes.getPtr(node.left.?);
-            var lVal: u16 = 0;
-            if (lNode) |n| {
-                lVal = try getNodeValue(n, nodes);
-            } else {
-                lVal = try std.fmt.parseInt(u16, node.left.?, 10);
-            }
-
             node.*.value = lVal;
             return node.*.value.?;
         },
     }
 
-    return 1;
+    @panic("Why are you here?!");
 }
 
 fn parseNode(line: []const u8) !Node {
