@@ -60,7 +60,7 @@ pub fn main() anyerror!void {
             .day7 => {
                 const day7 = @import("day7.zig");
                 try day7.part1();
-                //try day7.part2();
+                try day7.part2();
             },
         }
         

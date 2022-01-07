@@ -13,37 +13,45 @@ pub fn part1() !void {
 
     var nodes = std.StringHashMap(Node).init(allocator);
     defer nodes.deinit();
-    // defer {
-    //     var nk = nodes.keyIterator();
-    //     while (nk.next()) |k| {
-    //         allocator.free(k.*);
-    //     }
-    //     nodes.deinit();
-    // }
 
+    try parseNodes(&nodes);
+
+    const res: u16 = try getNodeValue(nodes.getPtr("a").?, &nodes, 0);
+    std.log.info("Part1: Wire a's output is {}", .{res});
+}
+
+pub fn part2() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    var allocator = gpa.allocator();
+
+    var nodes = std.StringHashMap(Node).init(allocator);
+    defer nodes.deinit();
+
+    try parseNodes(&nodes);
+    const aOut: u16 = try getNodeValue(nodes.getPtr("a").?, &nodes, 0);
+
+    try parseNodes(&nodes);
+    nodes.getPtr("b").?.*.value = aOut;
+
+    const res: u16 = try getNodeValue(nodes.getPtr("a").?, &nodes, 0);
+
+    std.log.info("Part2: Wire a's output (after a little fiddling) is {}", .{res});
+}
+
+fn parseNodes(nodes: *std.StringHashMap(Node)) !void {
     var i: usize = 0;
     var it = std.mem.tokenize(u8, input, "\n");
     while (it.next()) |line| : (i += 1) {
         const n = try parseNode(line);
         try nodes.put(n.name, n);
     }
-
-    const res: u16 = try getNodeValue(nodes.getPtr("a").?, &nodes);
-
-    var nit = nodes.iterator();
-    while (nit.next()) |n| {
-        std.log.warn("{s}: {d} ({s} {s} {s})", .{ n.key_ptr.*, n.value_ptr.value, n.value_ptr.left, n.value_ptr.op, n.value_ptr.right });
-    }
-
-    std.log.info("Part1: Result is {}", .{res});
 }
 
-pub fn part2() void {
-    std.log.info("Part2: Result is {}", .{0});
-}
+fn getNodeValue(node: *Node, nodes: *std.StringHashMap(Node), level: u16) std.fmt.ParseIntError!u16 {
+    if (node.*.value) |v| {
+        //std.log.warn("({d:02}){s} + {s} is {d} ({s} {s} {s})", .{ level, (" " ** 60)[0..level], node.*.name, node.*.value, node.*.left, node.*.op, node.*.right });
 
-fn getNodeValue(node: *Node, nodes: *std.StringHashMap(Node)) std.fmt.ParseIntError!u16 {
-    if (node.value) |v| {
         return v;
     }
 
@@ -52,7 +60,7 @@ fn getNodeValue(node: *Node, nodes: *std.StringHashMap(Node)) std.fmt.ParseIntEr
         const lNode = nodes.getPtr(ln);
 
         if (lNode) |n| {
-            lVal = try getNodeValue(n, nodes);
+            lVal = try getNodeValue(n, nodes, level + 1);
         } else {
             lVal = try std.fmt.parseInt(u16, ln, 10);
         }
@@ -63,44 +71,26 @@ fn getNodeValue(node: *Node, nodes: *std.StringHashMap(Node)) std.fmt.ParseIntEr
         const rNode = nodes.getPtr(rn);
 
         if (rNode) |n| {
-            rVal = try getNodeValue(n, nodes);
+            rVal = try getNodeValue(n, nodes, level + 1);
         } else {
             rVal = try std.fmt.parseInt(u16, rn, 10);
         }
     }
 
     switch (node.op) {
-        .AND => {
-            node.*.value = rVal & rVal;
-            return node.*.value.?;
-        },
-        .OR => {
-            node.*.value = lVal | rVal;
-            return node.*.value.?;
-        },
-        .RSHIFT => {
-            node.*.value = lVal >> @truncate(u4, rVal);
-            return node.*.value.?;
-        },
-        .LSHIFT => {
-            node.*.value = lVal << @truncate(u4, rVal);
-            return node.*.value.?;
-        },
-        .NOT => {
-            node.*.value = ~rVal;
-            return node.*.value.?;
-        },
+        .AND => node.*.value = lVal & rVal,
+        .OR => node.*.value = lVal | rVal,
+        .RSHIFT => node.*.value = lVal >> @truncate(u4, rVal),
+        .LSHIFT => node.*.value = lVal << @truncate(u4, rVal),
+        .NOT => node.*.value = ~rVal,
         // special cases
-        .input => {
-            return node.*.value.?;
-        },
-        .assign => {
-            node.*.value = lVal;
-            return node.*.value.?;
-        },
+        .input => {},
+        .assign => node.*.value = lVal,
     }
 
-    @panic("Why are you here?!");
+    //std.log.warn("({d:02}){s} * {s} is {d} ({s}={d} {s} {s}={d})", .{ level, (" " ** 60)[0..level], node.*.name, node.*.value, node.*.left, lVal, node.*.op, node.*.right, rVal });
+
+    return node.*.value.?;
 }
 
 fn parseNode(line: []const u8) !Node {
@@ -182,10 +172,6 @@ test "part1 tests" {
 
     var nodes = std.StringHashMap(Node).init(allocator);
     defer {
-        var nk = nodes.keyIterator();
-        while (nk.next()) |k| {
-            allocator.free(k.*);
-        }
         nodes.deinit();
     }
 
@@ -196,15 +182,14 @@ test "part1 tests" {
             const n = try parseNode(line);
             try nodes.put(n.name, n);
         }
-        const res: u16 = try getNodeValue(nodes.getPtr("i").?, &nodes);
-
-        var nit = nodes.iterator();
-        while (nit.next()) |n| {
-            std.log.warn("{s}: {d} ({s} {s} {s})", .{ n.key_ptr.*, n.value_ptr.value, n.value_ptr.left, n.value_ptr.op, n.value_ptr.right });
-
-            std.log.info("Part1: Result is {}", .{res});
+        const outs = "defghi";
+        var i: usize = 0;
+        while (i < outs.len) : (i += 1) {
+            std.log.warn("", .{});
+            std.log.warn("", .{});
+            _ = try getNodeValue(nodes.getPtr(outs[i .. i + 1]).?, &nodes, 0);
         }
-        try expectEqual(tc.expected, nodes.get("i").?.value.?);
+        //const res: u16 = try getNodeValue(nodes.getPtr("d").?, &nodes, 0);
     }
 }
 
