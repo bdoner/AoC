@@ -1,6 +1,6 @@
 const std = @import("std");
-const newTest = @import("utils.zig").newTest;
-const TestCase = @import("utils.zig").TestCase;
+const aocTest = @import("helpers/testcase.zig");
+
 const expectEqual = std.testing.expectEqual;
 
 const input = @embedFile("input/day3.txt");
@@ -82,10 +82,10 @@ fn solve(inp: []const u8, num_santas: u8) !u32 {
 }
 
 test "part1 tests" {
-    const tests = [_]TestCase(u32){
-        newTest(u32, 2, ">"),
-        newTest(u32, 4, "^>v<"),
-        newTest(u32, 2, "^v^v^v^v^v"),
+    const tests = [_]aocTest.TestCase(u32){
+        aocTest.newTest(u32, 2, ">"),
+        aocTest.newTest(u32, 4, "^>v<"),
+        aocTest.newTest(u32, 2, "^v^v^v^v^v"),
     };
 
     for (tests) |tc| {
@@ -95,10 +95,10 @@ test "part1 tests" {
 }
 
 test "part2 tests" {
-    const tests = [_]TestCase(u32){
-        newTest(u32, 3, "^v"),
-        newTest(u32, 3, "^>v<"),
-        newTest(u32, 11, "^v^v^v^v^v"),
+    const tests = [_]aocTest.TestCase(u32){
+        aocTest.newTest(u32, 3, "^v"),
+        aocTest.newTest(u32, 3, "^>v<"),
+        aocTest.newTest(u32, 11, "^v^v^v^v^v"),
     };
 
     for (tests) |tc| {

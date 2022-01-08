@@ -1,7 +1,7 @@
 const std = @import("std");
 const meta = std.meta;
-const newTest = @import("utils.zig").newTest;
-const TestCase = @import("utils.zig").TestCase;
+const aocTest = @import("helpers/testcase.zig");
+
 const expectEqual = std.testing.expectEqual;
 
 const input = @embedFile("input/day7.txt");
@@ -153,8 +153,8 @@ const Operation = enum {
 };
 
 test "part1 tests" {
-    const tests = [_]TestCase(u32){
-        newTest(u32, 65079, // wire i
+    const tests = [_]aocTest.TestCase(u32){
+        aocTest.newTest(u32, 65079, // wire i
             \\123 -> x
             \\456 -> y
             \\x AND y -> d
@@ -194,8 +194,8 @@ test "part1 tests" {
 }
 
 test "part2 tests" {
-    const tests = [_]TestCase(u32){
-        newTest(u32, 0, "abc"),
+    const tests = [_]aocTest.TestCase(u32){
+        aocTest.newTest(u32, 0, "abc"),
     };
 
     for (tests) |tc| {

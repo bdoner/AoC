@@ -1,6 +1,6 @@
 const std = @import("std");
-const newTest = @import("utils.zig").newTest;
-const TestCase = @import("utils.zig").TestCase;
+const aocTest = @import("helpers/testcase.zig");
+
 const expectEqual = std.testing.expectEqual;
 
 const input = @embedFile("input/day1.txt");
@@ -38,20 +38,20 @@ pub fn part2() void {
 
 test "part1 tests" {
 
-    const tests = [_]TestCase(i32) {
-        newTest(i32, 0, "(())"),
-        newTest(i32, 0, "(())"),
-        newTest(i32, 0, "()()"),
+    const tests = [_]aocTest.TestCase(i32) {
+        aocTest.newTest(i32, 0, "(())"),
+        aocTest.newTest(i32, 0, "(())"),
+        aocTest.newTest(i32, 0, "()()"),
 
-        newTest(i32, 3, "((("),
-        newTest(i32, 3, "(()(()("),
-        newTest(i32, 3, "))((((("),
+        aocTest.newTest(i32, 3, "((("),
+        aocTest.newTest(i32, 3, "(()(()("),
+        aocTest.newTest(i32, 3, "))((((("),
 
-        newTest(i32, -1, "())"),
-        newTest(i32, -1, "))("),
+        aocTest.newTest(i32, -1, "())"),
+        aocTest.newTest(i32, -1, "))("),
 
-        newTest(i32, -3, ")))"),
-        newTest(i32, -3, ")())())"),
+        aocTest.newTest(i32, -3, ")))"),
+        aocTest.newTest(i32, -3, ")())())"),
     };
 
     for (tests) |tc| {
@@ -64,9 +64,9 @@ test "part1 tests" {
 }
 
 test "part2 tests" {
-    const tests = [_]TestCase(u32) {
-        newTest(u32, 1, ")"),
-        newTest(u32, 5, "()())"),
+    const tests = [_]aocTest.TestCase(u32) {
+        aocTest.newTest(u32, 1, ")"),
+        aocTest.newTest(u32, 5, "()())"),
     };
 
     for (tests) |tc| {

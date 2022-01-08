@@ -1,6 +1,6 @@
 const std = @import("std");
-const newTest = @import("utils.zig").newTest;
-const TestCase = @import("utils.zig").TestCase;
+const aocTest = @import("helpers/testcase.zig");
+
 const expectEqual = std.testing.expectEqual;
 
 const input = @embedFile("input/day4.txt");
@@ -43,9 +43,9 @@ fn findIts(key: []const u8, difficulty: []const u8) !u32 {
 }
 
 test "part1 tests" {
-    const tests = [_]TestCase(u32){
-        newTest(u32, 609043, "abcdef"),
-        newTest(u32, 1048970, "pqrstuv"),
+    const tests = [_]aocTest.TestCase(u32){
+        aocTest.newTest(u32, 609043, "abcdef"),
+        aocTest.newTest(u32, 1048970, "pqrstuv"),
     };
 
     for (tests) |tc| {
@@ -56,7 +56,7 @@ test "part1 tests" {
 
 // This puzzle has no sample for part two
 // test "part2 tests" {
-//     const tests = [_]TestCase{
+//     const tests = [_]aocTest.TestCase{
 //       //  .{ .expected = 609043, .data = "abcdef" },
 //       // .{ .expected = 1048970, .data = "pqrstuv" },
 //     };

@@ -1,6 +1,6 @@
 const std = @import("std");
-const newTest = @import("utils.zig").newTest;
-const TestCase = @import("utils.zig").TestCase;
+const aocTest = @import("helpers/testcase.zig");
+
 const expectEqual = std.testing.expectEqual;
 
 const input = @embedFile("input/day6.txt");
@@ -174,8 +174,8 @@ test "part1 tests" {
     defer _ = gpa.deinit();
     var allocator = gpa.allocator();
 
-    const tests = [_]TestCase(u32){
-        newTest(u32, 998996,
+    const tests = [_]aocTest.TestCase(u32){
+        aocTest.newTest(u32, 998996,
             \\turn on 0,0 through 999,999
             \\toggle 0,0 through 999,0
             \\turn off 499,499 through 500,500
@@ -203,8 +203,8 @@ test "part1 tests" {
 }
 
 test "part2 tests" {
-    const tests = [_]TestCase(u32){
-        newTest(u32, 0, "abc"),
+    const tests = [_]aocTest.TestCase(u32){
+        aocTest.newTest(u32, 0, "abc"),
     };
 
     for (tests) |tc| {

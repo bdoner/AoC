@@ -1,6 +1,7 @@
 const std = @import("std");
-const newTest = @import("utils.zig").newTest;
-const TestCase = @import("utils.zig").TestCase;
+const aocTest = @import("helpers/testcase.zig");
+
+
 const expectEqual = std.testing.expectEqual;
 
 const input = @embedFile("input/day5.txt");
@@ -99,11 +100,11 @@ fn isNiceV2(string: []const u8) bool {
 }
 
 test "part1 tests" {
-    const tests = [_]TestCase(bool){
-        newTest(bool, true, "ugknbfddgicrmopn"),
-        newTest(bool, true, "aaa"),
-        newTest(bool, false, "jchzalrnumimnmhp"),
-        newTest(bool, false, "dvszwmarrgswjxmb"),
+    const tests = [_]aocTest.TestCase(bool){
+        aocTest.newTest(bool, true, "ugknbfddgicrmopn"),
+        aocTest.newTest(bool, true, "aaa"),
+        aocTest.newTest(bool, false, "jchzalrnumimnmhp"),
+        aocTest.newTest(bool, false, "dvszwmarrgswjxmb"),
     };
 
     for (tests) |tc| {
@@ -113,11 +114,11 @@ test "part1 tests" {
 }
 
 test "part2 tests" {
-    const tests = [_]TestCase(bool){
-        newTest(bool, true, "qjhvhtzxzqqjkmpb"),
-        newTest(bool, true, "xxyxx"),
-        newTest(bool, false, "uurcxstgmygtbstg"),
-        newTest(bool, false, "ieodomkazucvgmuy"),
+    const tests = [_]aocTest.TestCase(bool){
+        aocTest.newTest(bool, true, "qjhvhtzxzqqjkmpb"),
+        aocTest.newTest(bool, true, "xxyxx"),
+        aocTest.newTest(bool, false, "uurcxstgmygtbstg"),
+        aocTest.newTest(bool, false, "ieodomkazucvgmuy"),
     };
 
     std.log.warn("", .{});

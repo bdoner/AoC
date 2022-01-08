@@ -1,6 +1,7 @@
 const std = @import("std");
-const newTest = @import("utils.zig").newTest;
-const TestCase = @import("utils.zig").TestCase;
+const aocTest = @import("helpers/testcase.zig");
+
+
 const expectEqual = std.testing.expectEqual;
 
 const input = @embedFile("input/day2.txt");
@@ -74,9 +75,9 @@ pub fn part2() void {
 }
 
 test "part1 tests" {
-    const tests = [_]TestCase(u32){
-        newTest(u32, 58, "2x3x4"),
-        newTest(u32, 43, "1x1x10"),
+    const tests = [_]aocTest.TestCase(u32){
+        aocTest.newTest(u32, 58, "2x3x4"),
+        aocTest.newTest(u32, 43, "1x1x10"),
     };
 
     for(tests) |tc| {
@@ -91,9 +92,9 @@ test "part1 tests" {
 }
 
 test "part2 tests" {
-    const tests = [_]TestCase(u32){
-        newTest(u32, 34, "2x3x4"),
-        newTest(u32, 14, "1x1x10"),
+    const tests = [_]aocTest.TestCase(u32){
+        aocTest.newTest(u32, 34, "2x3x4"),
+        aocTest.newTest(u32, 14, "1x1x10"),
     };
 
     for(tests) |tc| {
