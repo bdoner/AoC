@@ -8,11 +8,12 @@ const input = @embedFile("input/day8.txt");
 pub fn part1() !void {
     std.log.warn("", .{});
 
+    var buff: [100]u8 = undefined;
     var totMemLen: u32 = 0;
     var totStorLen: u32 = 0;
     var it = std.mem.tokenize(u8, input, "\n");
     while (it.next()) |tok| {
-        const lr = try parseString(tok);
+        const lr = try parseString(tok, &buff);
         std.log.warn("ml: {d}, sl: {d}, r: {s}, p: {s}", .{ lr.memoryLen, lr.storageLen, lr.rawStr, lr.parsedStr });
         totMemLen += lr.memoryLen;
         totStorLen += lr.storageLen;
@@ -45,8 +46,7 @@ const StringInfo = struct {
     parsedStr: []const u8,
 };
 
-fn parseString(str: []const u8) !StringInfo {
-    var outBuff: [100]u8 = undefined;
+fn parseString(str: []const u8, outBuff: []u8) !StringInfo {
     var istr = str[1 .. str.len - 1];
     if (istr.len == 0) {
         return StringInfo{
@@ -117,11 +117,12 @@ test "part1 tests" {
     };
 
     for (tests) |tc| {
+        var buff: [100]u8 = undefined;
         var totMemLen: u32 = 0;
         var totStorLen: u32 = 0;
         var it = std.mem.tokenize(u8, tc.data, "\n");
         while (it.next()) |tok| {
-            const lr = try parseString(tok);
+            const lr = try parseString(tok, &buff);
             std.log.warn("ml: {d}, sl: {d}, r: {s}, p: {s}", .{ lr.memoryLen, lr.storageLen, lr.rawStr, lr.parsedStr });
             totMemLen += lr.memoryLen;
             totStorLen += lr.storageLen;
