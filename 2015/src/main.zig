@@ -14,6 +14,7 @@ const Day = enum {
     day9,
     day10,
     day11,
+    day12,
 };
 
 pub fn main() anyerror!void {
@@ -85,6 +86,11 @@ pub fn main() anyerror!void {
                 const day11 = @import("day11.zig");
                 try day11.part1();
                 try day11.part2();
+            },
+            .day12 => {
+                const day12 = @import("day12.zig");
+                try day12.part1();
+                try day12.part2();
             },
         }
         
